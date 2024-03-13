@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "io.github.mrkekovich.neat"
-version = "0.1.0a0"
+version = "0.1.0a1"
 
 
 repositories {
@@ -26,15 +26,6 @@ sourceSets {
 tasks.processResources {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
-
-//tasks {
-//    compileKotlin {
-//        kotlinOptions.jvmTarget = "1.9.22"
-//    }
-//    compileTestKotlin {
-//        kotlinOptions.jvmTarget = "1.9.22"
-//    }
-//}
 
 tasks.test {
     useJUnitPlatform()
