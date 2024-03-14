@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "io.github.mrkekovich.neat"
-version = "0.1.0a1"
+version = "0.1.0a2"
 
 
 repositories {
@@ -36,7 +36,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "io.github.mrkekovich.neat"
             artifactId = "neat"
-            version = "0.1.0a0"
+            version = "0.1.0a2"
 
             from(components["java"])
         }
