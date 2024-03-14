@@ -117,7 +117,9 @@ class Trainer internal constructor(private var pointer: Long) : AutoCloseable {
         pointer = 0
     }
 
-    private var isOpen = true
+    var isOpen = true
+        private set
+
     private inline fun <R> ensureOpen(block: () -> R): R =
         if (isOpen) block()
         else throw IllegalStateException("Trainer was closed.")
