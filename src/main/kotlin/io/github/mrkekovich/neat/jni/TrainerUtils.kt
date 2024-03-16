@@ -10,14 +10,14 @@ internal object TrainerUtils {
         outputs: Long,
         maxIndividuals: Long = 100,
         maxLayers: Long = 4,
-        maxPerLayers: Long = 20,
+        maxPerLayer: Long = 20,
         deltaThreshold: Double = 3.0,
-        c1: Double = 1.0,
-        c2: Double = 1.0,
-        c3: Double = 1.0,
-        crossovers: Boolean = true,
-        changeWeights: Double = 0.95,
-        guaranteedNewNeuron: Double = 0.2,
+        disjointCoefficient: Double = 1.0,
+        excessCoefficient: Double = 1.0,
+        weightDifferenceCoefficient: Double = 1.0,
+        enableCrossovers: Boolean = true,
+        weightChangeProbability: Double = 0.95,
+        newNeuronProbability: Double = 0.2,
     ): Long
 
     external fun getInputs(trainer: Long): Long

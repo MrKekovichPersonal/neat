@@ -4,12 +4,13 @@ import io.github.mrkekovich.neat.annotations.MemoryUnsafe
 import io.github.mrkekovich.neat.jni.TopologyUtils
 
 @MemoryUnsafe
-class UnsafeTopology internal constructor(internal var pointer: Long) : AutoCloseable {
+@Suppress("unused")
+class Topology internal constructor(internal var pointer: Long) : Destructible() {
     constructor(json: String) : this(TopologyUtils.loadJson(json))
 
     fun toJson() = TopologyUtils.toJson(pointer)
 
-    override fun close() {
+    override fun destroy() {
         TopologyUtils.destroy(pointer)
         pointer = 0
     }
