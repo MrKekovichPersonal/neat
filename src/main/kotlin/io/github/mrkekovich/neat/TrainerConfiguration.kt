@@ -1,7 +1,7 @@
 package io.github.mrkekovich.neat
 
 /**
- * Configuration data class for NEAT Trainer.
+ * Configuration data class for NEAT UnsafeTrainer.
  * Defines parameters for the NEAT algorithm, which evolves neural networks.
  *
  * @property inputs Number of input neurons in the neural network.

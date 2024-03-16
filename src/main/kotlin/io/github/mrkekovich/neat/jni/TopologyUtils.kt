@@ -2,7 +2,7 @@ package io.github.mrkekovich.neat.jni
 
 import io.github.mrkekovich.neat.loadLib
 /**
- * JNI bindings for native implementation of Topology.
+ * JNI bindings for native implementation of UnsafeTopology.
  */
 internal object TopologyUtils {
     external fun loadJson(json: String): Long

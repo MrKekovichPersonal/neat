@@ -1,5 +1,6 @@
 package io.github.mrkekovich.neat.unsafe
 
+import io.github.mrkekovich.neat.annotations.MemoryUnsafe
 import io.github.mrkekovich.neat.exceptions.ClosedException
 
 /**
@@ -20,8 +21,13 @@ abstract class Destructible : AutoCloseable {
     protected abstract fun destroy()
 
 
+    /**
+     * Closes the object and destroys the underlying native object associated with a class.
+     */
+    @MemoryUnsafe
     final override fun close() {
-        isOpen = false
+        if (!isOpen) throw ClosedException("Destructible cannot be closed twice.")
         destroy()
+        isOpen = false
     }
 }
