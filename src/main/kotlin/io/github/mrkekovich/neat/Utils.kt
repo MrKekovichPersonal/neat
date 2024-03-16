@@ -1,5 +1,8 @@
 package io.github.mrkekovich.neat
 
+import io.github.mrkekovich.neat.annotations.MemoryUnsafe
+import io.github.mrkekovich.neat.unsafe.UnsafeNeuralNetwork
+import io.github.mrkekovich.neat.unsafe.UnsafeTopology
 import java.io.File
 
 internal fun loadLib(fileName: String = "neat_gru") {
@@ -16,34 +19,7 @@ internal fun loadLib(fileName: String = "neat_gru") {
     System.load(tempFile.absolutePath)
 }
 
-fun runSimulation(
-    simulation: Simulation,
-    trainer: Trainer,
-    iterations: Int,
-) {
-    for (i in 0 until iterations) {
-        simulation.runGeneration()
-            .let { trainer.step(it) }
-            .also { simulation.resetNeuralNetworks(it) }
-    }
-}
-
-inline fun runSimulation(
-    simulation: Simulation,
-    trainer: Trainer,
-    iterations: Int,
-    accessCallback: (TrainAccessCallback) -> Unit
-) {
-    for (i in 0 until iterations) {
-        simulation.runGeneration()
-            .let { trainer.step(it) }
-            .also { simulation.resetNeuralNetworks(it) }
-        TrainAccessCallback(simulation, trainer, i).also { accessCallback(it) }
-    }
-}
-
-data class TrainAccessCallback(
-    val simulation: Simulation,
-    val trainer: Trainer,
-    val iterations: Int,
-)
+@OptIn(MemoryUnsafe::class)
+internal fun LongArray.toNeuralNetworkList(): List<UnsafeNeuralNetwork> = map { UnsafeNeuralNetwork(it) }
+@OptIn(MemoryUnsafe::class)
+internal fun LongArray.toTopologyList(): List<UnsafeTopology> = map { UnsafeTopology(it) }

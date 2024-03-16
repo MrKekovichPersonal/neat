@@ -2,7 +2,7 @@ package io.github.mrkekovich.neat.jni
 
 import io.github.mrkekovich.neat.loadLib
 
-object TrainerUtils {
+internal object TrainerUtils {
     external fun create(input: Long, output: Long): Long
 
     external fun createWithAllParameters(
@@ -58,10 +58,14 @@ object TrainerUtils {
     external fun getMaxSpeciesCount(trainer: Long): Long
 
     external fun getNewNetworks(trainer: Long): LongArray
-    external fun init(trainer: Long)
+    external fun createNewSpecie(trainer: Long)
     external fun destroy(trainer: Long)
     external fun step(trainer: Long, results: DoubleArray): LongArray
     external fun finish(trainer: Long)
+
+    external fun addSpecieWithTopology(trainer: Long, topology: Long)
+
+    external fun getBestTopologies(trainer: Long): LongArray
 
     init { loadLib() }
 }

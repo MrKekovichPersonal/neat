@@ -1,11 +1,14 @@
-package io.github.mrkekovich.neat
+package io.github.mrkekovich.neat.unsafe
 
-import io.github.mrkekovich.neat.NeuralNetwork.Companion.toNeuralNetworks
+import io.github.mrkekovich.neat.annotations.MemoryUnsafe
 import io.github.mrkekovich.neat.jni.TrainerUtils
+import io.github.mrkekovich.neat.toNeuralNetworkList
+import io.github.mrkekovich.neat.toTopologyList
 
-class Trainer internal constructor(private var pointer: Long) : AutoCloseable {
+@MemoryUnsafe
+class UnsafeTrainer internal constructor(private var pointer: Long) : AutoCloseable {
     init {
-        TrainerUtils.init(pointer)
+        TrainerUtils.createNewSpecie(pointer)
     }
 
     constructor(inputs: Long, outputs: Long) : this(TrainerUtils.create(inputs, outputs))
@@ -37,23 +40,6 @@ class Trainer internal constructor(private var pointer: Long) : AutoCloseable {
             crossovers = crossovers,
             changeWeights = changeWeights,
             guaranteedNewNeuron = guaranteedNewNeuron,
-        )
-    )
-
-    constructor(configuration: TrainerConfiguration) : this(
-        TrainerUtils.createWithAllParameters(
-            inputs = configuration.inputs,
-            outputs = configuration.outputs,
-            maxIndividuals = configuration.maxIndividuals,
-            maxLayers = configuration.maxLayers,
-            maxPerLayers = configuration.maxPerLayers,
-            deltaThreshold = configuration.deltaThreshold,
-            c1 = configuration.c1,
-            c2 = configuration.c2,
-            c3 = configuration.c3,
-            crossovers = configuration.crossovers,
-            changeWeights = configuration.changeWeights,
-            guaranteedNewNeuron = configuration.guaranteedNewNeuron,
         )
     )
 
@@ -105,9 +91,17 @@ class Trainer internal constructor(private var pointer: Long) : AutoCloseable {
     val maxSpeciesCount
         get() = ensureOpen { TrainerUtils.getMaxSpeciesCount(pointer) }
 
-    fun getNewNetworks() = ensureOpen { TrainerUtils.getNewNetworks(pointer).toNeuralNetworks() }
+    fun getNewNetworks() = ensureOpen {
+        TrainerUtils.getNewNetworks(pointer).toNeuralNetworkList()
+    }
 
-    fun step(results: DoubleArray) = ensureOpen { TrainerUtils.step(pointer, results).toNeuralNetworks() }
+    fun getBestTopologies() = ensureOpen { TrainerUtils.getBestTopologies(pointer).toTopologyList() }
+
+    fun addSpecieWithTopology(topology: Long) = ensureOpen { TrainerUtils.addSpecieWithTopology(pointer, topology) }
+
+    fun step(results: DoubleArray) = ensureOpen {
+        TrainerUtils.step(pointer, results).toNeuralNetworkList()
+    }
 
     fun finish() = ensureOpen { TrainerUtils.finish(pointer) }
 
@@ -122,5 +116,5 @@ class Trainer internal constructor(private var pointer: Long) : AutoCloseable {
 
     private inline fun <R> ensureOpen(block: () -> R): R =
         if (isOpen) block()
-        else throw IllegalStateException("Trainer was closed.")
+        else throw IllegalStateException("UnsafeTrainer was closed.")
 }
