@@ -2,7 +2,7 @@ package io.github.mrkekovich.neat.unsafe
 
 import io.github.mrkekovich.neat.annotations.MemoryUnsafe
 import io.github.mrkekovich.neat.interfaces.NeuralNetwork
-import io.github.mrkekovich.neat.jni.NeuralNetworkUtils
+import io.github.mrkekovich.neat.jni.NeuralNetworkJNI
 
 /**
  * UnsafeNeuralNetwork is an unsafeNeuralNetwork class that represents a neural network.
@@ -14,12 +14,12 @@ import io.github.mrkekovich.neat.jni.NeuralNetworkUtils
 @MemoryUnsafe
 @Suppress("unused")
 class UnsafeNeuralNetwork internal constructor(private var pointer: Long) : NeuralNetwork, Destructible() {
-    constructor(unsafeTopology: UnsafeTopology) : this(NeuralNetworkUtils.create(unsafeTopology.pointer))
+    constructor(unsafeTopology: UnsafeTopology) : this(NeuralNetworkJNI.create(unsafeTopology.pointer))
 
-    override fun compute(inputs: DoubleArray): DoubleArray = ensureOpen { NeuralNetworkUtils.compute(pointer, inputs) }
+    override fun compute(inputs: DoubleArray): DoubleArray = ensureOpen { NeuralNetworkJNI.compute(pointer, inputs) }
 
     override fun destroy() {
-        NeuralNetworkUtils.destroy(pointer)
+        NeuralNetworkJNI.destroy(pointer)
         pointer = 0
     }
 }

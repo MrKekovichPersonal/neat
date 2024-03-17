@@ -4,7 +4,7 @@ import io.github.mrkekovich.neat.TrainerConfiguration
 import io.github.mrkekovich.neat.annotations.MemoryUnsafe
 import io.github.mrkekovich.neat.exceptions.OutOfSpeciesException
 import io.github.mrkekovich.neat.interfaces.Trainer
-import io.github.mrkekovich.neat.jni.TrainerUtils
+import io.github.mrkekovich.neat.jni.TrainerJNI
 
 /**
  * UnsafeTrainer is an unsafeNeuralNetwork class that represents a NEAT (NeuroEvolution of Augmenting Topologies) trainer.
@@ -18,40 +18,40 @@ import io.github.mrkekovich.neat.jni.TrainerUtils
 @Suppress("unused")
 class UnsafeTrainer internal constructor(private var pointer: Long) : Trainer, Destructible() {
     @Deprecated("Might be deleted due to lack of use")
-    constructor(inputs: Long, outputs: Long) : this(TrainerUtils.create(inputs, outputs))
+    constructor(inputs: Long, outputs: Long) : this(TrainerJNI.create(inputs, outputs))
 
     constructor(configuration: TrainerConfiguration) : this(configuration.toTrainer())
 
-    override val inputs: Long get() = ensureOpen { TrainerUtils.getInputs(pointer) }
+    override val inputs: Long get() = ensureOpen { TrainerJNI.getInputs(pointer) }
 
-    override val outputs: Long get() = ensureOpen { TrainerUtils.getOutputs(pointer) }
+    override val outputs: Long get() = ensureOpen { TrainerJNI.getOutputs(pointer) }
 
     override var maxIndividuals: Long
-        get() = ensureOpen { TrainerUtils.getMaxIndividuals(pointer) }
-        set(value) = ensureOpen { TrainerUtils.setMaxIndividuals(pointer, value) }
+        get() = ensureOpen { TrainerJNI.getMaxIndividuals(pointer) }
+        set(value) = ensureOpen { TrainerJNI.setMaxIndividuals(pointer, value) }
 
     override var deltaThreshold: Double
-        get() = ensureOpen { TrainerUtils.getDeltaThreshold(pointer) }
-        set(value) = ensureOpen { TrainerUtils.setDeltaThreshold(pointer, value) }
+        get() = ensureOpen { TrainerJNI.getDeltaThreshold(pointer) }
+        set(value) = ensureOpen { TrainerJNI.setDeltaThreshold(pointer, value) }
 
     override var disjointCoefficient: Double
-        get() = ensureOpen { TrainerUtils.getC1(pointer) }
-        set(value) = ensureOpen { TrainerUtils.setC1(pointer, value) }
+        get() = ensureOpen { TrainerJNI.getC1(pointer) }
+        set(value) = ensureOpen { TrainerJNI.setC1(pointer, value) }
 
     override var excessCoefficient: Double
-        get() = ensureOpen { TrainerUtils.getC2(pointer) }
-        set(value) = ensureOpen { TrainerUtils.setC2(pointer, value) }
+        get() = ensureOpen { TrainerJNI.getC2(pointer) }
+        set(value) = ensureOpen { TrainerJNI.setC2(pointer, value) }
 
     override var weightDifferenceCoefficient: Double
-        get() = ensureOpen { TrainerUtils.getC3(pointer) }
-        set(value) = ensureOpen { TrainerUtils.setC3(pointer, value) }
+        get() = ensureOpen { TrainerJNI.getC3(pointer) }
+        set(value) = ensureOpen { TrainerJNI.setC3(pointer, value) }
 
     override fun setCompatibilityFormula(
         disjointCoefficient: Double,
         excessCoefficient: Double,
         weightDifferenceCoefficient: Double,
     ): Unit = ensureOpen {
-        TrainerUtils.setFormula(
+        TrainerJNI.setFormula(
             pointer,
             disjointCoefficient,
             excessCoefficient,
@@ -60,33 +60,33 @@ class UnsafeTrainer internal constructor(private var pointer: Long) : Trainer, D
     }
 
     override var weightChangeProbability: Double
-        get() = ensureOpen { TrainerUtils.getChangeWeights(pointer) }
-        set(value) = ensureOpen { TrainerUtils.setChangeWeights(pointer, value) }
+        get() = ensureOpen { TrainerJNI.getChangeWeights(pointer) }
+        set(value) = ensureOpen { TrainerJNI.setChangeWeights(pointer, value) }
 
     override var newNeuronProbability: Double
-        get() = ensureOpen { TrainerUtils.getGuaranteedNewNeuron(pointer) }
-        set(value) = ensureOpen { TrainerUtils.setGuaranteedNewNeuron(pointer, value) }
+        get() = ensureOpen { TrainerJNI.getGuaranteedNewNeuron(pointer) }
+        set(value) = ensureOpen { TrainerJNI.setGuaranteedNewNeuron(pointer, value) }
 
     override var maxLayers: Long
-        get() = ensureOpen { TrainerUtils.getMaxLayers(pointer) }
-        set(value) = ensureOpen { TrainerUtils.setMaxLayers(pointer, value) }
+        get() = ensureOpen { TrainerJNI.getMaxLayers(pointer) }
+        set(value) = ensureOpen { TrainerJNI.setMaxLayers(pointer, value) }
 
     override var maxPerLayers: Long
-        get() = ensureOpen { TrainerUtils.getMaxPerLayers(pointer) }
-        set(value) = ensureOpen { TrainerUtils.setMaxPerLayers(pointer, value) }
+        get() = ensureOpen { TrainerJNI.getMaxPerLayers(pointer) }
+        set(value) = ensureOpen { TrainerJNI.setMaxPerLayers(pointer, value) }
 
     override var enableCrossovers: Boolean
-        get() = ensureOpen { TrainerUtils.getCrossovers(pointer) }
-        set(value) = ensureOpen { TrainerUtils.setCrossovers(pointer, value) }
+        get() = ensureOpen { TrainerJNI.getCrossovers(pointer) }
+        set(value) = ensureOpen { TrainerJNI.setCrossovers(pointer, value) }
 
-    override val maxSpeciesCount: Long get() = ensureOpen { TrainerUtils.getMaxSpeciesCount(pointer) }
+    override val maxSpeciesCount: Long get() = ensureOpen { TrainerJNI.getMaxSpeciesCount(pointer) }
 
     override fun getNewNetworks(): List<UnsafeNeuralNetwork> = ensureOpen {
-        TrainerUtils.getNewNetworks(pointer).takeIf { it.isNotEmpty() }?.toNeuralNetworkList()
+        TrainerJNI.getNewNetworks(pointer).takeIf { it.isNotEmpty() }?.toNeuralNetworkList()
             ?: throw OutOfSpeciesException()
     }
 
-    override fun getBestTopologies(): List<UnsafeTopology> = ensureOpen { TrainerUtils.getBestTopologies(pointer).toTopologyList() }
+    override fun getBestTopologies(): List<UnsafeTopology> = ensureOpen { TrainerJNI.getBestTopologies(pointer).toTopologyList() }
 
     /**
      * Adds a new species with the given unsafeTopology to the NEAT algorithm.
@@ -94,22 +94,22 @@ class UnsafeTrainer internal constructor(private var pointer: Long) : Trainer, D
      * @param unsafeTopology The UnsafeTopology object representing the initial unsafeTopology for the new species.
      */
     fun addSpecieWithTopology(unsafeTopology: UnsafeTopology): Unit = ensureOpen {
-        TrainerUtils.addSpecieWithTopology(pointer, unsafeTopology.pointer)
+        TrainerJNI.addSpecieWithTopology(pointer, unsafeTopology.pointer)
     }
 
 
     override fun step(scores: DoubleArray): List<UnsafeNeuralNetwork> = ensureOpen {
-        TrainerUtils.step(pointer, scores).takeIf { it.isNotEmpty() }?.toNeuralNetworkList()
+        TrainerJNI.step(pointer, scores).takeIf { it.isNotEmpty() }?.toNeuralNetworkList()
             ?: throw OutOfSpeciesException()
     }
 
-    override fun createNewSpecie(): Unit = ensureOpen { TrainerUtils.createNewSpecie(pointer) }
+    override fun createNewSpecie(): Unit = ensureOpen { TrainerJNI.createNewSpecie(pointer) }
 
     @Deprecated("Might be deleted due to lack of use")
-    fun finish(): Unit = ensureOpen { TrainerUtils.finish(pointer) }
+    fun finish(): Unit = ensureOpen { TrainerJNI.finish(pointer) }
 
     override fun destroy() {
-        TrainerUtils.destroy(pointer)
+        TrainerJNI.destroy(pointer)
         pointer = 0
     }
 }
@@ -120,7 +120,8 @@ private fun LongArray.toNeuralNetworkList(): List<UnsafeNeuralNetwork> = map { U
 @OptIn(MemoryUnsafe::class)
 private fun LongArray.toTopologyList(): List<UnsafeTopology> = map { UnsafeTopology(it) }
 
-private fun TrainerConfiguration.toTrainer(): Long = TrainerUtils.createWithAllParameters(
+@OptIn(MemoryUnsafe::class)
+private fun TrainerConfiguration.toTrainer(): Long = TrainerJNI.createWithAllParameters(
     inputs = inputs,
     outputs = outputs,
     maxIndividuals = maxIndividuals,

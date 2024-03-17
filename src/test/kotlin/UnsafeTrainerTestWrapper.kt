@@ -31,11 +31,4 @@ class UnsafeTrainerTestWrapper {
         assertEquals(1.0, unsafeTrainerWithConfig.weightDifferenceCoefficient)
         assertEquals(0.95, unsafeTrainerWithConfig.weightChangeProbability)
     }
-
-    @Test
-    fun smth() {
-        NeuralNetworkWrapper(TopologyWrapper(File(""))).use {
-
-        }
-    }
 }

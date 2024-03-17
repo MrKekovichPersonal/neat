@@ -2,7 +2,7 @@ package io.github.mrkekovich.neat.unsafe
 
 import io.github.mrkekovich.neat.annotations.MemoryUnsafe
 import io.github.mrkekovich.neat.interfaces.Topology
-import io.github.mrkekovich.neat.jni.TopologyUtils
+import io.github.mrkekovich.neat.jni.TopologyJNI
 
 /**
  * UnsafeTopology is an unsafeNeuralNetwork class that represents the topology (structure) of a neural network.
@@ -14,12 +14,12 @@ import io.github.mrkekovich.neat.jni.TopologyUtils
 @MemoryUnsafe
 @Suppress("unused")
 class UnsafeTopology internal constructor(internal var pointer: Long) : Topology, Destructible() {
-    constructor(json: String) : this(TopologyUtils.loadJson(json))
+    constructor(json: String) : this(TopologyJNI.loadJson(json))
 
-    override fun toJson(): String = ensureOpen { TopologyUtils.toJson(pointer) }
+    override fun toJson(): String = ensureOpen { TopologyJNI.toJson(pointer) }
 
     override fun destroy() {
-        TopologyUtils.destroy(pointer)
+        TopologyJNI.destroy(pointer)
         pointer = 0
     }
 }
