@@ -22,16 +22,18 @@ suspend fun train(
     iterations: Int,
     trainerConfiguration: TrainerConfiguration,
     simulation: Simulation,
+    speciesCount: Int = 1,
     access: (trainer: Trainer, iteration: Int) -> Unit,
 ): List<TopologyWrapper> {
-    return UnsafeTrainer(trainerConfiguration)
-        .use { trainer ->
-            simulation.safeReset(trainer.getNewNetworks())
+    return UnsafeTrainer(trainerConfiguration).use { trainer ->
+            repeat(speciesCount) { trainer.createNewSpecie() }
+
+            var networks = trainer.getNewNetworks()
 
             try {
                 repeat(iterations) {
-                    val newNetworks = trainer.step(simulation.getScores())
-                    simulation.safeReset(newNetworks)
+                    simulation.closeAndReset(networks)
+                    networks = trainer.step(simulation.getScores())
                     access(trainer, it)
                 }
             } catch (_: OutOfSpeciesException) {
@@ -56,14 +58,16 @@ suspend fun train(
     iterations: Int,
     trainerConfiguration: TrainerConfiguration,
     simulation: Simulation,
+    speciesCount: Int = 1
 ): List<TopologyWrapper> {
     return UnsafeTrainer(trainerConfiguration).use { trainer ->
-        simulation.safeReset(trainer.getNewNetworks())
+        repeat(speciesCount) { trainer.createNewSpecie() }
+        var networks = trainer.getNewNetworks()
 
         try {
             repeat(iterations) {
-                val newNetworks = trainer.step(simulation.getScores())
-                simulation.safeReset(newNetworks)
+                simulation.closeAndReset(networks)
+                networks = trainer.step(simulation.getScores())
             }
         } catch (e: OutOfSpeciesException) {
             println("Species were exhausted. Returning the best topologies.")
@@ -72,3 +76,5 @@ suspend fun train(
         trainer.getBestTopologies().map { TopologyWrapper(it) }
     }
 }
+
+fun DoubleArray.argmax() = indices.maxByOrNull { this[it] }

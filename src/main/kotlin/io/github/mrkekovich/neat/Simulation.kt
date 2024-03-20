@@ -29,7 +29,8 @@ abstract class Simulation {
      *
      * @param newNetworks The new set of neural networks.
      */
-    internal suspend fun safeReset(newNetworks: List<UnsafeNeuralNetwork>) = coroutineScope {
+    @MemoryUnsafe // can lead to crashes if closed NNs were passed in.
+    suspend fun closeAndReset(newNetworks: List<UnsafeNeuralNetwork>) = coroutineScope {
         for (network in _networks) launch { network.close() }
         _networks = newNetworks
         resetCallback()
